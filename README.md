@@ -1,191 +1,199 @@
-# CS 1501 – Algorithm Implementation – Assignment #1 
+# Boggle Board Generator and Word Checker
 
-Due: Friday, February 9th, @ 11:59pm on Gradescope
+## `generateBoggleBoard(int size)`
 
-Late submission deadline: Sunday, February 11th @11:59pm with 10% penalty per late day
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
 
-You should submit the Java file `BoggleGame.java` to GradeScope (the link is on Canvas). You must also submit a writeup named `a1.md` and an Assignment Information Sheet `InfoSheet.md` as described below. _The code submitted to GradeScope is what will be graded_.
+### Algorithm:
+1. Validate input size.
+2. Generate a random string of uppercase letters using `generateRandomString`.
+3. Populate the board with characters from the string.
 
-**You are encouraged to use code from Lab 1.**
+### Debugging:
+- Ensured size validation to avoid negative or zero-sized boards.
+- Checked if the generated string matches the expected length.
 
-## Table of Contents
+---
 
-- [Overview](#overview)
-- [TASK - Implementing the `BoggleGameInterface`](#task)
-- [Important Notes](#important-notes)
-- [Writeup](#writeup)
-- [Submission Requirements](#submission-requirements)
-- [Rubrics](#rubrics)
+## `countWords(char[][] boggleBoard, DictInterface dictionary)`
 
-## Overview
- 
-__Purpose__: In this assignment, you will complete the implementation of a [Boggle game](https://wordshake.com/boggle) program that generates and answers a variety of queries on a Boggle board. The Boggle Game in this assignment is defined as follows. Given a two-dimensional board of letters, find all words with at least three adjacent letters. Adjacent letters are horizontal, vertical, or diagonal neighbors. Any tile in the board can only be used once per word, but can be used for multiple words.
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- Interface `DictInterface` for the dictionary.
 
-The starter code has been provided to you with the following content:
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `countWordsHelper` for each cell.
+3. Mark visited cells and explore neighboring cells.
+4. Validate formed words against the dictionary using `searchPrefix`.
 
-- `Main.java` - An example driver program for testing your code.
-- `BoggleGameInterface.java` - This interface defines the methods that you will implement, __do not modify__.
-- `Tile.java` - A class that defines a tile in the Boggle board, __do not modify__.
-- `BoggleGame.java` - The file you will edit. It includes eight methods to complete. The `TODO` comments mark them.
-- `DictInterface.java` and `MyDictionary.java`- Used for the dictionary implementation for the assignment, __do not modify__.
-- `dict8.txt` - An example dictionary.
-- `CallableMenuItem` and `MenuProgram`- These files provide a generic framework for building menu-based programs, __do not modify__.
-- `a1.md` and `InfoSheet.md` - Placeholders for the assignment writeup and the information sheet.
+### Debugging:
+- Ensured proper resetting of the board for each DFS call.
+- Checked for correct marking of visited cells and backtracking.
 
-## Task
+---
 
-You will complete the implementation of the `BoggleGame` class, which implements the `BoggleGameInterface` defined in `BoggleGameInterface.java`. The interface has eight methods that you will have to implement in `BoggleGame.java`.
+## `countWordsOfCertainLength(char[][] boggleBoard, DictInterface dictionary, int wordLength)`
 
-```java
-public interface BoggleGameInterface {
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- Interface `DictInterface` for the dictionary.
 
-    /**
-     * Randomly generate and return a Boggle board of a given dimension
-     * @param size the dimension size of the board
-     * @return a randomly generated Boggle board as a 2-d array of characters or 
-     *         null if size <= 0 or size is too big
-     */
-    public char[][] generateBoggleBoard(int size);
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `countWordsOfCertainLengthHelper` for each cell.
+3. Mark visited cells and explore neighboring cells.
+4. Validate formed words against the dictionary using `searchPrefix`.
+5. Check for the required word length.
 
-    /**
-     * Returns the total number of words of length three or more found in the 
-     * board following the rules of the Boggle Game
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param dictionary the DictInterface dictionary
-     * @return total number of words found in the board
-     */
-    public int countWords(char[][] boggleBoard, DictInterface dictionary);
+### Debugging:
+- Ensured proper resetting of the board for each DFS call.
+- Checked for correct marking of visited cells and backtracking.
+- Validated the word length during the recursive calls.
 
-    /**
-     * Returns the total number of words of a given length found in the board
-     * following the rules of the Boggle Game
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param dictionary the DictInterface dictionary
-     * @param wordLength the word length
-     * @return total number of words of length `wordLength` found in the board
-     */
-    public int countWordsOfCertainLength(char[][] boggleBoard, DictInterface dictionary, int wordLength);
+---
 
-    /**
-     * Checks if a given word is in a given dictionary
-     * @param dictionary the DictInterface dictionary
-     * @param word the String word to check
-     * @return true if word exists in dictionary and false otherwise
-     */
-    public boolean isWordInDictionary(DictInterface dictionary, String word);
+## `isWordInDictionary(DictInterface dictionary, String word)`
 
-    /**
-     * Checks if a given word can be found in a given Boggle board following the
-     * rules of the Boggle Game
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param word the String word to check
-     * @return rue if word can be found in boggleBoard and false otherwise
-     */
-    public boolean isWordInBoard(char[][] boggleBoard, String word);
+### Data Structures:
+- Interface `DictInterface` for the dictionary.
 
-    /**
-     * Finds a word of length three or more from a given dictionary in a given 
-     * Boggle board
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param dictionary the DictInterface dictionary
-     * @return a String word (from dictionary) of length three or more found in 
-     * boggleBoard or null if no such word can be found
-     */
-    public String anyWord(char[][] boggleBoard, DictInterface dictionary);
+### Algorithm:
+1. Use a `StringBuilder` to efficiently perform `searchPrefix`.
+2. Call `searchPrefix` to check if the word exists in the dictionary.
 
-     /**
-     * Finds a word of a given length from a given dictionary in a given 
-     * Boggle board
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param dictionary the DictInterface dictionary
-     * @param length the int word length
-     * @return a String word (from dictionary) of length characters found in 
-     * boggleBoard or null if no such word can be found
-     */
-    public String anyWord(char[][] boggleBoard, DictInterface dictionary, int length);
+### Debugging:
+- Ensured correct usage of `searchPrefix`.
+- Validated the returned status to determine word existence.
 
+---
 
-    /**
-     * Finds a given word in a given board and returns a list of board tiles 
-     * where the word is found
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param word the String word to find
-     * @return an ArrayList of board tiles where the word is found or null if the
-     * word cannot be found in the board
-     */
-    public ArrayList<Tile> markWordInBoard(char[][] boggleBoard, String word);
+## `isWordInBoard(char[][] boggleBoard, String word)`
 
-    /**
-     * Checks a list of board tiles to see if they are adjacent (according to
-     * the rules of the Boggle Game) and that they have the letters of a given 
-     * word in order
-     * @param boggleBoard the 2-d character array representing the Boggle board
-     * @param tiles an ArrayList of board tiles
-     * @param word
-     * @return true if tiles contains adjacent tiles that have the letters of 
-     * word in order or false otherwise
-     */
-    public boolean checkTiles(char[][] boggleBoard, ArrayList<Tile> tiles, String word);
-}
-```
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
 
-Many of the methods that you will implement in the assignment use backtracking and pruning. Backtracking is returning to an earlier part of the search to find other paths to the solution. In the case of Boggle, this means going back to the previous tile to try using letters in a different direction to form a word. Pruning is a technique that reduces the number of options to process while doing an exhaustive search of the search space of a problem. **Please refer to the lecture notes on backtracking and to Lab 1**.
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `isWordInBoardDFS`.
+3. Explore neighboring cells and match the characters in the word.
 
+### Debugging:
+- Verified the correctness of DFS traversal.
+- Checked character matching and proper backtracking.
 
-## Important Notes:
+---
 
-- **Refer to the backtracking template that we discussed in class.**
-- **The only code file that you are allowed to change is `BoggleGame.java`.**
-- Make sure that the methods you implement has _NO INPUT_ or anything that would make the method require any user interaction.
-- The `MyDictionary` implementation of the `DictInterface` that is provided to you should work correctly, but it is not very efficient.  Note that it is doing a linear search of an `ArrayList` to determine if the argument is a prefix or word in the dictionary.  
--	Be sure to thoroughly document your code.
-- `commit` and `push` the finished code to your Github repository. You can check the following [page](https://code.visualstudio.com/docs/sourcecontrol/github) to setup GitHub access directly from VS Code. If you think the commit command is hanging in VS Code, it is probably asking for a commit message in an open file. You would then need to enter a message and close the file before it is able to commit to GitHub.
-- Submit your Github repository to GradeScope for automatic grading.
+## `anyWord(char[][] boggleBoard, DictInterface dictionary)`
 
-## Coding Style and Documentation
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- Interface `DictInterface` for the dictionary.
 
-Please check [this guide](https://introcs.cs.princeton.edu/java/11style/) for directions regarding the expected coding style and documentation.
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `anyWordDFS`.
+3. Explore neighboring cells and return the first valid word found.
 
-## Writeup
+### Debugging:
+- Checked DFS traversal and backtracking.
+- Ensured correct handling of the first found word.
 
-Once you have completed your algorithm, write a short paper (500-750 words) using [Github Markdown syntax](https://guides.github.com/features/mastering-markdown/) and named `a1.md` that summarizes your project in the following ways:
-1.	Discuss how you implemented each of the methods in some detail. Include
-    * how you set up the data structures necessary for the problem
-    * how your algorithm proceeds
-    * any coding or debugging issues you faced and how you resolved them
-3.	Include an asymptotic analysis of the worst-case run-time of the methods you implemented.  Some values to consider in this analysis may include:
-    * Number of words in the dictionary
-    * Number of characters in a word
-    * Board size
+---
 
-## Submission Requirements
+## `markWordInBoard(char[][] boggleBoard, String word)`
 
-You must submit your Github repository to GradeScope. We will only grade the following file:
-1)	`BoggleGame.java`
-3)	`a1.md`: A well written/formatted paper explaining your method implementation (see the Writeup section above for details on the paper) 
-4)	`InfoSheet.md`: Assignment Information Sheet (including compilation and execution information).
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- `ArrayList<Tile>` for marking the path.
 
-The idea from your submission is that your TA (and/or the autograder when available) can compile and run your programs from the command line WITHOUT ANY additional files or changes, so be sure to test it thoroughly before submitting it. If the TA (and/or the autograder) cannot compile or run your submitted code it will be graded as if the program does not work. 
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `markWordInBoardDFS`.
+3. Explore neighboring cells and mark the path with `Tile` objects.
 
-_Note: If you use an IDE, such as NetBeans, Eclipse, or IntelliJ, to develop your programs, make sure the programs will compile and run on the command-line before submitting – this may require some modifications to your program (e.g., removing package declaration)._
+### Debugging:
+- Verified the correctness of DFS traversal.
+- Checked character matching and proper backtracking.
+- Ensured correct marking of the path.
 
-## Rubric
+---
 
-Item|Points
-----|------
-Autograder Score | 75
-Write-up paper|	10
-Code style and documentation |	10
-Assignment Information Sheet|	5
+## `checkTiles(char[][] boggleBoard, ArrayList<Tile> tiles, String word)`
 
-Please note that when the autograder is available, its score will be used as a guidance for the TA, not as an official final score. Please also note that the autograder rubric is the definitive rubric for the assignment. The rubric below will be used by the TA to assign partial credit in case your code scored less than 40% of the autograder score. If your code is manually graded for partial credit, the maximum you can get for the autograded part is 60%.
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- `ArrayList<Tile>` for the provided tiles.
 
-Item|Points
-----|------
-`countWords` | 15
-`countWordsOfCertainLength` | 10
-`isWordInDictionary` | 10 
-`isWordInBoard` | 15
-The two `anyWord` methods | 15 
-`markWordInBoard` | 5
-`checkTiles` | 5
+### Algorithm:
+1. Iterate through the list of tiles.
+2. Check adjacency and character matching.
+3. Validate the last tile and its corresponding letter.
+
+### Debugging:
+- Ensured proper handling of tile adjacency.
+- Checked character matching and validation of the last tile.
+
+---
+
+## `anyWord(char[][] boggleBoard, DictInterface dictionary, int length)`
+
+### Data Structures:
+- 2D array `char[][]` representing the Boggle board.
+- Interface `DictInterface` for the dictionary.
+
+### Algorithm:
+1. Iterate through each cell on the board.
+2. Perform DFS using `anyWordDFS`.
+3. Explore neighboring cells and return the first valid word of the specified length found.
+
+### Debugging:
+- Checked DFS traversal, backtracking, and length constraint.
+- Ensured correct handling of the first found word.
+
+---
+
+## `generateRandomString(int length)`
+
+### Data Structures:
+- `Random` class for generating random numbers.
+- `StringBuilder` for constructing the random string.
+
+### Algorithm:
+1. Set the left and right limits for uppercase letters.
+2. Generate random integers within the limits.
+3. Convert the integers to characters and append to the `StringBuilder`.
+
+### Debugging:
+- Checked the correctness of the generated random string.
+- Ensured proper conversion from integers to characters.
+
+---
+
+## Asymptotic Analysis
+
+### `countWords` and `countWordsHelper`
+- **Time Complexity (Worst Case):** O(n^4)
+  - n: Board size.
+  - Nested loops explore all cells and their neighbors, resulting in a quadratic time complexity.
+
+### `countWordsOfCertainLength`
+- **Time Complexity (Worst Case):** O(n^4)
+  - Similar to `countWords` with an additional check for word length.
+
+### `isWordInBoard` and `anyWord`
+- **Time Complexity (Worst Case):** O(n^4)
+  - DFS explores all possible paths on the board.
+
+### `markWordInBoard` and `checkTiles`
+- **Time Complexity (Worst Case):** O(n^4)
+  - DFS traversal exploring all paths.
+
+### `anyWord` with Length Constraint
+- **Time Complexity (Worst Case):** O(n^4)
+  - DFS on the board with additional length check.
+
+### `generateRandomString`
+- **Time Complexity (Worst Case):** O(length)
+  - Linear time complexity based on the specified length.
